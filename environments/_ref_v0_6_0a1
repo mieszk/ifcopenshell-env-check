@@ -1,0 +1,26 @@
+FROM continuumio/miniconda3:latest
+
+# Workaround for conda missing package
+# https://github.com/ContinuumIO/docker-images/issues/49
+RUN apt-get update && \
+    apt-get install libgl1-mesa-glx -y && \
+    apt-get clean
+
+# Install packages from conda
+RUN conda create -y -q -n testenv python=3.6 && \
+    conda install -y -n testenv -c conda-forge -c ifcopenshell -c dlr-sc -c tpaviot \
+    ifcopenshell=0.6.0a1 \
+    pythonocc-core=7.4.0 \
+    oce=0.18.3 \
+    libboost=1.65.1
+
+
+ENV PATH /opt/conda/envs/testenv/bin:$PATH
+
+ENV ENV_NAME _ref_v0_6_0a1
+COPY ./patch/${ENV_NAME}/* /opt/conda/envs/testenv/lib/python3.6/site-packages/ifcopenshell/geom/
+
+WORKDIR /app
+COPY ./src /app
+
+CMD ["python", "main.py"]

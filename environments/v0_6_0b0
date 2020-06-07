@@ -1,0 +1,23 @@
+FROM continuumio/miniconda3:latest
+
+# Workaround for conda missing package
+# https://github.com/ContinuumIO/docker-images/issues/49
+RUN apt-get update && \
+    apt-get install libgl1-mesa-glx -y && \
+    apt-get clean
+
+# Install packages from conda
+RUN conda create -y -q -n testenv python=3.6 && \
+    conda install -y -n testenv -c conda-forge -c CadQuery -c oce -c ifcopenshell \
+    ifcopenshell=v0.6.0b0 \
+    pythonocc-core=0.18.2 \
+    oce=0.18.2
+
+ENV PATH /opt/conda/envs/testenv/bin:$PATH
+
+ENV ENV_NAME v0_6_0b0
+
+WORKDIR /app
+COPY ./src /app
+
+CMD ["python", "main.py"]
