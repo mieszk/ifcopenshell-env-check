@@ -22,10 +22,11 @@ def write_shapes(obj_file, shape_map):
         if geometry is None:
             return
 
-        # verify bounding box to prevent segmentation fault
+        # verify bounding box to prevent crashing due to empty shape
         bbox = Bnd.Bnd_Box()
         BRepBndLib.brepbndlib_Add(geometry, bbox)
         if bbox.IsVoid():
+            print(f"Cannot serialize shape {name} due to invalid shape.")
             return
 
         mesh = BRepMesh.BRepMesh_IncrementalMesh(geometry, DEFLECTION).Shape()

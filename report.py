@@ -59,5 +59,4 @@ def compare(product, other, env_name):
 
 
 if __name__ == "__main__":
-    import os, sys
     run()
