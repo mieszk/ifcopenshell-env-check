@@ -1,7 +1,6 @@
-from OCC.Core import GProp, BRepGProp, TopExp, TopAbs, Bnd, BRepBndLib
-
-
 def make_bbox(shape):
+    from OCC.Core import Bnd, BRepBndLib
+
     bbox = Bnd.Bnd_Box()
     BRepBndLib.brepbndlib_Add(shape, bbox)
     return bbox
@@ -9,6 +8,8 @@ def make_bbox(shape):
 
 def get_length(shape):
     """total length of edges"""
+    from OCC.Core import GProp, BRepGProp
+
     gprops = GProp.GProp_GProps()
     BRepGProp.brepgprop_LinearProperties(shape, gprops)
     return gprops.Mass()
@@ -16,18 +17,24 @@ def get_length(shape):
 
 def get_area(shape):
     """total area of faces"""
+    from OCC.Core import GProp, BRepGProp
+
     gprops = GProp.GProp_GProps()
     BRepGProp.brepgprop_SurfaceProperties(shape, gprops)
     return gprops.Mass()
 
 
 def get_volume(shape):
+    from OCC.Core import GProp, BRepGProp
+
     gprop = GProp.GProp_GProps()
     BRepGProp.brepgprop_VolumeProperties(shape, gprop)
     return gprop.Mass()
 
 
 def is_valid_shape(shape):
+    from OCC.Core import TopExp, TopAbs
+
     if shape is None:
         return False
     explorer = TopExp.TopExp_Explorer(shape, TopAbs.TopAbs_FACE)
@@ -45,21 +52,15 @@ def almost_equals(val1, val2, tol=1e-3):
 
 class Product:
     def __init__(
-        self,
-        guid,
-        name,
-        has_valid_shape=False,
-        length=0.0,
-        area=0.0,
-        volume=0.0,
+        self, guid, name, has_valid_shape=False, length=0.0, area=0.0, volume=0.0,
     ):
         self.guid = guid
         self.name = name
 
         self.has_valid_shape = has_valid_shape
-        self.length: float = float(length)
-        self.area: float = float(area)
-        self.volume: float = float(volume)
+        self.length = float(length)
+        self.area = float(area)
+        self.volume = float(volume)
 
     def load_shape(self, shape):
         self.has_valid_shape = is_valid_shape(shape)
@@ -80,13 +81,8 @@ class Product:
     def __repr__(self):
         fmt = (
             "Product(guid={}, name={}, has_valid_shape={}, length={:.4f}, "
-            "area={:.4f}, volume={:.4f}"
+            "area={:.4f}, volume={:.4f})"
         )
         return fmt.format(
-            self.guid,
-            self.name,
-            self.has_valid_shape,
-            self.length,
-            self.area,
-            self.volume,
+            self.guid, self.name, self.has_valid_shape, self.length, self.area, self.volume,
         )
